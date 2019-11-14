@@ -1,6 +1,8 @@
 const { expect } = require('chai')
 const knex = require('knex')
 const app = require('../src/app')
+const { makeNotesArray, makeMaliciousNote } = require('./notes.fixtures')
+const { makeFoldersArray } = require('./folders.fixtures')
 
 describe('Notes Endpoints', function() {
     let db
@@ -29,7 +31,27 @@ describe('Notes Endpoints', function() {
         })
 
         context('Given there are notes in the database', () => {
-            
+            const testFolders = makeFoldersArray();
+            const testNotes = makeNotesArray();
+
+            beforeEach('insert notes', () => {
+                return db
+                    .into('noteful_folders')
+                    .insert(testFolders)
+                    .then(() => {
+                        return db
+                            .into('noteful_notes')
+                            .insert(testNotes)
+                    })
+            })
+
+            it('responds with 200 and all of the notes', () => {
+                return supertest(app)
+                    .get('/api/notes')
+                    .expect(200, testNotes)
+            })
         })
+
+        
     })
 })
