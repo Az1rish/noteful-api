@@ -141,7 +141,7 @@ describe('Notes Endpoints', function() {
         })
     })
 
-    describe.only(`POST /api/notes`, () => {
+    describe(`POST /api/notes`, () => {
         const testFolders = makeFoldersArray();
         beforeEach(`insert folders`, () => {
             return db
@@ -211,5 +211,16 @@ describe('Notes Endpoints', function() {
         })
     })
 
-    
+    describe.only(`DELETE /api/notes/:note_id`, () => {
+        context('Given no notes', () => {
+            it('responds with 404', () => {
+                const noteId = 123456
+                return supertest(app)
+                    .delete(`/api/notes/${noteId}`)
+                    .expect(404, { error: { message: `Note doesn't exist` } })
+            })
+        })
+
+        
+    })
 })
