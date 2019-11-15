@@ -197,6 +197,19 @@ describe('Notes Endpoints', function() {
             })
         })
 
+        it('removes XSS attack content from response', () => {
+            const { maliciousNote, expectedNote } = makeMaliciousNote()
 
+            return supertest(app)
+                .post(`/api/notes`)
+                .send(maliciousNote)
+                .expect(201)
+                .expect(res => {
+                    expect(res.body.title).to.eql(expectedNote.title)
+                    expect(res.body.content).to.eql(expectedNote.content)
+                })
+        })
     })
+
+    
 })
