@@ -114,6 +114,32 @@ describe('Notes Endpoints', function() {
             })
         })
 
-        
+        context(`Given an XSS attack note`, () => {
+            const testFolders = makeFoldersArray();
+            const { maliciousNote, expectedNote } = makeMaliciousNote()
+
+            beforeEach(`insert malicious note`, () => {
+                return db
+                    .into('noteful_folders')
+                    .insert(testFolders)
+                    .then(() => {
+                        return db
+                            .into('noteful_notes')
+                            .insert([ maliciousNote ])
+                    })
+            })
+
+            it(`removes XSS attack content`, () => {
+                return supertest(app)
+                    .get(`/api/notes/${maliciousNote.id}`)
+                    .expect(200)
+                    .expect(res => {
+                        expect(res.body.title).to.eql(expectedNote.title)
+                        expect(res.body.content).to.eql(expectedNote.content)
+                    })
+            })
+        })
     })
+
+    
 })
