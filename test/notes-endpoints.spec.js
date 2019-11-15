@@ -221,6 +221,36 @@ describe('Notes Endpoints', function() {
             })
         })
 
-        
+        context('Given there are notes in the database', () => {
+            const testFolders = makeFoldersArray();
+            const testNotes = makeNotesArray()
+
+            beforeEach('insert notes', () => {
+                return db
+                    .into('noteful_folders')
+                    .insert(testFolders)
+                    .then(() => {
+                        return db
+                            .into('noteful_notes')
+                            .insert(testNotes)
+                    })
+            })
+
+            it(`responds with 204 and removes the note`, () => {
+                const idToRemove = 2
+                const expectedNotes = testNotes.filter(note => note.id !== idToRemove)
+
+                return supertest(app)
+                    .delete(`/api/notes/${idToRemove}`)
+                    .expect(204)
+                    .then(res => 
+                        supertest(app)
+                            .get(`/api/notes`)
+                            .expect(expectedNotes)
+                    )
+            })
+        })
     })
+
+    
 })
