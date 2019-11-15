@@ -79,7 +79,7 @@ describe('Notes Endpoints', function() {
         })
     })
 
-    describe.only(`GET /api/notes/:note_id`, () => {
+    describe(`GET /api/notes/:note_id`, () => {
         context(`Given no notes`, () => {
             it(`responds with 404`, () => {
                 const noteId = 123456
@@ -141,5 +141,42 @@ describe('Notes Endpoints', function() {
         })
     })
 
-    
+    describe.only(`POST /api/notes`, () => {
+        const testFolders = makeFoldersArray();
+        beforeEach(`insert folders`, () => {
+            return db
+                .into('noteful_folders')
+                .insert(testFolders)
+        })
+
+        it(`creates a note, responding with 201 and the new note`, function() {
+            this.retries(3)
+            const newNote = {
+                title: 'New title',
+                content: 'New content...',
+                folder: 1
+            }
+            return supertest(app)
+                .post(`/api/notes`)
+                .send(newNote)
+                .expect(201)
+                .expect(res => {
+                    expect(res.body.title).to.eql(newNote.title)
+                    expect(res.body.content).to.eql(newNote.content)
+                    expect(res.body.folder).to.eql(newNote.folder)
+                    expect(res.body).to.have.property('id')
+                    expect(res.headers.location).to.eql(`/api/notes/${res.body.id}`)
+                    const expected = new Date().toLocaleString('en', { timeZone: 'UTC' })
+                    const actual = new Date(res.body.date_modified).toLocaleString()
+                    expect(actual).to.eql(expected)
+                })
+                .then(postRes =>
+                    supertest(app)
+                        .get(`/api/notes/${postRes.body.id}`)
+                        .expect(postRes.body)
+                )
+        })
+
+        
+    })
 })
