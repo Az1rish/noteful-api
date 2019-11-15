@@ -177,6 +177,26 @@ describe('Notes Endpoints', function() {
                 )
         })
 
-        
+        const requiredFields = ['title', 'content']
+
+        requiredFields.forEach(field => {
+            const newNote = {
+                title: 'Test title',
+                content: 'Test content...'
+            }
+
+            it(`responds with 400 and an error message when the '${field}' is missing`, () => {
+                delete newNote[field]
+                
+                return supertest(app)
+                    .post(`/api/notes`)
+                    .send(newNote)
+                    .expect(400, {
+                        error: { message: `Missing '${field}' in request body` }
+                    })
+            })
+        })
+
+
     })
 })
