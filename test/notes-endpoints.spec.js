@@ -79,5 +79,16 @@ describe('Notes Endpoints', function() {
         })
     })
 
-    
+    describe(`GET /api/notes/:notes_id`, () => {
+        context(`Given no notes`, () => {
+            it(`responds with 404`, () => {
+                const noteId = 123456
+                return supertest(app)
+                    .get(`/api/notes/${noteId}`)
+                    .expect(404, { error: { message: `Note doesn't exist` } })
+            })
+        })
+
+        
+    })
 })
