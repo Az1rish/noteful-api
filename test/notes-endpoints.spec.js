@@ -79,7 +79,7 @@ describe('Notes Endpoints', function() {
         })
     })
 
-    describe(`GET /api/notes/:notes_id`, () => {
+    describe.only(`GET /api/notes/:note_id`, () => {
         context(`Given no notes`, () => {
             it(`responds with 404`, () => {
                 const noteId = 123456
@@ -89,6 +89,6 @@ describe('Notes Endpoints', function() {
             })
         })
 
-        
+
     })
 })

@@ -25,6 +25,24 @@ notesRouter
             .catch(next)
     })
   
-    
+notesRouter
+    .route('/:note_id')
+    .all((req, res, next) => {
+        NotesService.getById(
+            req.app.get('db'),
+            req.params.note_id
+        )
+            .then(note => {
+                if (!note) {
+                    return res.status(404).json({
+                        error: { message: `Note doesn't exist` }
+                    })
+                }
+                // save for next middleware and call next middleware
+                res.note = note
+                next()
+            })
+            .catch(next)
+    })
 
 module.exports = notesRouter
