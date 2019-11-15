@@ -89,6 +89,31 @@ describe('Notes Endpoints', function() {
             })
         })
 
+        context(`Given there are articles in the database`, () => {
+            const testFolders = makeFoldersArray();
+            const testNotes = makeNotesArray()
 
+            beforeEach(`insert notes`, () => {
+                return db
+                    .into('noteful_folders')
+                    .insert(testFolders)
+                    .then(() => {
+                        return db
+                            .into('noteful_notes')
+                            .insert(testNotes)
+                    })
+            })
+
+            it(`responds with 200 and the specified note`, () => {
+                const noteId = 2
+                const expectedNote = testNotes[noteId - 1]
+
+                return supertest(app)
+                    .get(`/api/notes/${noteId}`)
+                    .expect(200, expectedNote)
+            })
+        })
+
+        
     })
 })
