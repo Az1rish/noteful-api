@@ -311,7 +311,30 @@ describe('Notes Endpoints', function() {
                     })
             })
 
-            
+            it(`responds with 204 when updating only a subset of fields`, () => {
+                const idToUpdate = 2
+                const updateNote = {
+                    title: 'Updated note title',
+                }
+                const expectedNote = {
+                    ...testNotes[idToUpdate - 1],
+                    ...updateNote
+                }
+
+                return supertest(app)
+                    .patch(`/api/notes/${idToUpdate}`)
+                    .send({
+                        ...updateNote,
+                        fieldToIgnore: 'should not be in GET response'
+                    })
+                    .expect(204)
+                    .then(res =>
+                        supertest(app)
+                            .get(`/api/notes/${idToUpdate}
+                            `)
+                            .expect(expectedNote)
+                    )
+            })
         })
     })
 })
