@@ -262,6 +262,44 @@ describe('Notes Endpoints', function() {
             })
         })
 
+        context(`Given there are notes in the database`, () => {
+            const testFolders = makeFoldersArray();
+            const testNotes = makeNotesArray()
 
+            beforeEach(`insert notes`, () => {
+                return db
+                    .into('noteful_folders')
+                    .insert(testFolders)
+                    .then(() => {
+                        return db
+                            .into('noteful_notes')
+                            .insert(testNotes)
+                    })
+            })
+
+            it(`responds with 204 and updates the note`, () => {
+                const idToUpdate = 2
+                const updateNote = {
+                    title: 'Updated title',
+                    content: 'Updated content...',
+                }
+                const expectedNote = {
+                    ...testNotes[idToUpdate - 1],
+                    ...updateNote
+                }
+
+                return supertest(app)
+                    .patch(`/api/notes/${idToUpdate}`)
+                    .send(updateNote)
+                    .expect(204)
+                    .then(res =>
+                        supertest(app)
+                            .get(`/api/notes/${idToUpdate}`)
+                            .expect(expectedNote)
+                    )
+            })
+
+
+        })
     })
 })

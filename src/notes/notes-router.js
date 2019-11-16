@@ -82,6 +82,28 @@ notesRouter
             })
             .catch(next)
     })
+    .patch(jsonParser, (req, res, next) => {
+        const { title, content } = req.body
+        const noteToUpdate = { title, content }
 
+        const numberOfValues = Object.values(noteToUpdate).filter(Boolean).length
+        if (numberOfValues === 0) {
+            return res.status(400).json({
+                error: {
+                    message: `Request body must contain either 'title' or 'content'`
+                }
+            })
+        }
+
+        NotesService.updateNote(
+            req.app.get('db'),
+            req.params.note_id,
+            noteToUpdate
+        )
+            .then(numRowsAffected => {
+                res.status(204).end()
+            })
+            .catch(next)
+    })
 
 module.exports = notesRouter
