@@ -159,7 +159,17 @@ describe(`Folders Endpoints`, function() {
             })
         })
         
+        it(`removes XSS attack content from response`, () => {
+            const { maliciousFolder, expectedFolder } = makeMaliciousFolder()
+            return supertest(app)
+                .post(`/api/folders`)
+                .send(maliciousFolder)
+                .expect(201)
+                .expect(res => {
+                    expect(res.body.title).to.eql(expectedFolder.title)
+                })
+        })
     })
 
-
+    
 })
