@@ -21,7 +21,28 @@ foldersRouter
             })
             .catch(next)
     })
+    .post(jsonParser, (req, res, next) => {
+        const { title } = req.body
+        const newFolder = { title }
+        
+        if (title == null) {
+            return res.status(400).json({
+                error: { message: `Missing title in request body` }
+            })
+        }
 
+        FoldersService.insertFolder(
+            req.app.get('db'),
+            newFolder
+        )
+            .then(folder => {
+                res
+                    .status(201)
+                    .location(path.posix.join(req.originalUrl, `/${folder.id}`))
+                    .json(serializeFolder(folder))
+            })
+            .catch(next)
+    })
 
 foldersRouter
     .route('/:folder_id')
@@ -44,7 +65,7 @@ foldersRouter
     .get((req, res, next) => {
         res.json(serializeFolder(res.folder))
     })
-    
+
 
 
 module.exports = foldersRouter

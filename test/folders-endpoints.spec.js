@@ -65,7 +65,7 @@ describe(`Folders Endpoints`, function() {
         })
     })
 
-    describe.only(`GET /api/folders/:folder_id`, () => {
+    describe(`GET /api/folders/:folder_id`, () => {
         context(`Given no folders`, () => {
             it(`responds with 404`, () => {
                 const folderId = 123456
@@ -113,5 +113,33 @@ describe(`Folders Endpoints`, function() {
                     })
             })
         })
+    })
+
+    describe.only(`POST /api/folders`, () => {
+        it(`creates a folder, responding with 201 and the new folder`, function() {
+            this.retries(3)
+            const newFolder = {
+                title: 'New test folder'
+            }
+            return supertest(app)
+                .post(`/api/folders`)
+                .send(newFolder)
+                .expect(201)
+                .expect(res => {
+                    expect(res.body.title).to.eql(newFolder.title)
+                    expect(res.body).to.have.property('id')
+                    expect(res.headers.location).to.eql(`/api/folders/${res.body.id}`)
+                    const expected = new Date().toLocaleString('en', { timeZone: 'UTC' })
+                    const actual = new Date(res.body.date_created).toLocaleString()
+                    expect(actual).to.eql(expected)
+                })
+                .then(postRes =>
+                     supertest(app)
+                        .get(`/api/folders/${postRes.body.id}`)
+                        .expect(postRes.body)
+                )
+        })
+
+        
     })
 })
