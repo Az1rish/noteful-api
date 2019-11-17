@@ -140,6 +140,26 @@ describe(`Folders Endpoints`, function() {
                 )
         })
 
+        const requiredFields = ['title']
+
+        requiredFields.forEach(field => {
+            const newFolder = {
+                title: 'New test folder'
+            }
+    
+            it(`responds with 400 and an error message if title is missing`, () => {
+                delete newFolder[field]
+    
+                return supertest(app)
+                    .post(`/api/folders`)
+                    .send(newFolder)
+                    .expect(400, {
+                        error: { message: `Missing title in request body` }
+                    })
+            })
+        })
         
     })
+
+
 })
