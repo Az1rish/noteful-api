@@ -95,6 +95,23 @@ describe(`Folders Endpoints`, function() {
             })
         })
 
-        
+        context(`Given an XSS attack folder`, () => {
+            const { maliciousFolder, expectedFolder } = makeMaliciousFolder()
+
+            beforeEach(`insert malicious folder`, () => {
+                return db
+                    .into('noteful_folders')
+                    .insert([ maliciousFolder ])
+            })
+
+            it(`removes XSS attack content`, () => {
+                return supertest(app)
+                    .get(`/api/folders/${maliciousFolder.id}`)
+                    .expect(200)
+                    .expect(res => {
+                        expect(res.body.title).to.eql(expectedFolder.title)
+                    })
+            })
+        })
     })
 })
