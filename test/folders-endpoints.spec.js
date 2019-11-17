@@ -115,7 +115,7 @@ describe(`Folders Endpoints`, function() {
         })
     })
 
-    describe.only(`POST /api/folders`, () => {
+    describe(`POST /api/folders`, () => {
         it(`creates a folder, responding with 201 and the new folder`, function() {
             this.retries(3)
             const newFolder = {
@@ -171,5 +171,16 @@ describe(`Folders Endpoints`, function() {
         })
     })
 
-    
+    describe.only(`DELETE /api/folders/:folder_id`, () => {
+        context(`Given no folders`, () => {
+            it(`responds with 404`, () => {
+                const folderId = 123456
+                return supertest(app)
+                    .delete(`/api/folders/${folderId}`)
+                    .expect(404, { error: { message: `Folder doesn't exist` } })
+            })
+        })
+
+        
+    })
 })
