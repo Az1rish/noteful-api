@@ -20,7 +20,7 @@ describe(`Folders Endpoints`, function() {
 
     afterEach(`cleanup`, () => db.raw(`TRUNCATE noteful_folders, noteful_notes RESTART IDENTITY CASCADE`))
 
-    describe.only(`GET /api/folders`, () => {
+    describe(`GET /api/folders`, () => {
         context(`Given no folders`, () => {
             it(`responds with 200 and an empty list`, () => {
                 return supertest(app)
@@ -65,5 +65,17 @@ describe(`Folders Endpoints`, function() {
         })
     })
 
+    describe.only(`GET /api/folders/:folder_id`, () => {
+        context(`Given no folders`, () => {
+            it(`responds with 404`, () => {
+                const folderId = 123456
+                return supertest(app)
+                    .get(`/api/folders/${folderId}`)
+                    .expect(404, { error: { message: `Folder doesn't exist` } }) 
+        
+            })
+        })
 
+        
+    })
 })

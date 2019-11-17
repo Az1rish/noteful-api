@@ -23,4 +23,25 @@ foldersRouter
     })
 
 
+foldersRouter
+    .route('/:folder_id')
+    .all((req, res, next) => {
+        FoldersService.getById(
+            req.app.get('db'),
+            req.params.folder_id
+        )
+            .then(folder => {
+                if (!folder) {
+                    return res.status(404).json({
+                        error: { message: `Folder doesn't exist` }
+                    })
+                }
+                res.folder = folder
+                next()
+            })
+            .catch(next)
+    })
+
+    
+
 module.exports = foldersRouter
