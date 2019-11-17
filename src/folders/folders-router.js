@@ -41,7 +41,10 @@ foldersRouter
             })
             .catch(next)
     })
-
+    .get((req, res, next) => {
+        res.json(serializeFolder(res.folder))
+    })
     
+
 
 module.exports = foldersRouter

@@ -76,6 +76,25 @@ describe(`Folders Endpoints`, function() {
             })
         })
 
+        context(`Given there are folders in the database`, () => {
+            const testFolders = makeFoldersArray();
+
+            beforeEach(`insert folders`, () => {
+                return db
+                    .into('noteful_folders')
+                    .insert(testFolders)
+            })
+
+            it(`responds with 200 and the specified folder`, () => {
+                const folderId = 2
+                const expectedFolder = testFolders[folderId - 1]
+
+                return supertest(app)
+                    .get(`/api/folders/${folderId}`)
+                    .expect(200, expectedFolder)
+            })
+        })
+
         
     })
 })
