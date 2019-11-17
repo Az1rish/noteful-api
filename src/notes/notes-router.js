@@ -63,8 +63,7 @@ notesRouter
                         error: { message: `Note doesn't exist` }
                     })
                 }
-                // save for next middleware and call next middleware
-                res.note = note
+                res.note = note // save for next middleware and call next middleware
                 next()
             })
             .catch(next)

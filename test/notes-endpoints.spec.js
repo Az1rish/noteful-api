@@ -252,7 +252,7 @@ describe('Notes Endpoints', function() {
         })
     })
 
-    describe.only('PATCH /api/notes/:note_id', () => {
+    describe('PATCH /api/notes/:note_id', () => {
         context(`Given no notes`, () => {
             it(`responds with 404`, () => {
                 const noteId = 123456
@@ -330,8 +330,7 @@ describe('Notes Endpoints', function() {
                     .expect(204)
                     .then(res =>
                         supertest(app)
-                            .get(`/api/notes/${idToUpdate}
-                            `)
+                            .get(`/api/notes/${idToUpdate}`)
                             .expect(expectedNote)
                     )
             })
