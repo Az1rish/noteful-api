@@ -1,6 +1,7 @@
 const { expect } = require('chai')
 const knex = require('knex')
 const app = require('../src/app')
+const { makeFoldersArray } = require('./folders.fixtures')
 
 describe(`Folders Endpoints`, function() {
     let db
@@ -25,6 +26,22 @@ describe(`Folders Endpoints`, function() {
                 return supertest(app)
                     .get(`/api/folders`)
                     .expect(200, [])
+            })
+        })
+
+        context(`Given there are folders in the database`, () => {
+            const testFolders = makeFoldersArray();
+
+            beforeEach(`insert folders`, () => {
+                return db
+                    .into('noteful_folders')
+                    .insert(testFolders)
+            })
+
+            it(`responds with 200 and all of the folders`, () => {
+                return supertest(app)
+                    .get(`/api/folders`)
+                    .expect(200, testFolders)
             })
         })
 
