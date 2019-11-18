@@ -65,6 +65,7 @@ notesRouter
                 }
                 res.note = note // save for next middleware and call next middleware
                 next()
+                return null
             })
             .catch(next)
     })

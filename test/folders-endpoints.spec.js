@@ -171,7 +171,7 @@ describe(`Folders Endpoints`, function() {
         })
     })
 
-    describe.only(`DELETE /api/folders/:folder_id`, () => {
+    describe(`DELETE /api/folders/:folder_id`, () => {
         context(`Given no folders`, () => {
             it(`responds with 404`, () => {
                 const folderId = 123456
@@ -181,6 +181,30 @@ describe(`Folders Endpoints`, function() {
             })
         })
 
-        
+        context(`Given there are folders in the database`, () => {
+            const testFolders = makeFoldersArray()
+
+            beforeEach(`insert folders`, () => {
+                return db
+                    .into('noteful_folders')
+                    .insert(testFolders)
+            })
+
+            it(`responds with 204 and removes the folder`, () => {
+                const idToRemove = 2
+                const expectedFolders = testFolders.filter(folder => folder.id !== idToRemove)
+
+                return supertest(app)
+                    .delete(`/api/folders/${idToRemove}`)
+                    .expect(204)
+                    .then(res =>
+                        supertest(app)
+                            .get(`/api/folders`)
+                            .expect(expectedFolders)
+                    )
+            })
+        })
     })
+
+
 })
