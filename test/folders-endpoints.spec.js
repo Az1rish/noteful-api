@@ -206,5 +206,16 @@ describe(`Folders Endpoints`, function() {
         })
     })
 
+    describe.only(`PATCH /api/folders/:folder_id`, () => {
+        context(`Given no folders`, () => {
+            it(`responds with 404`, () => {
+                const folderId = 123456
+                return supertest(app)
+                    .patch(`/api/folders/${folderId}`)
+                    .expect(404, { error: { message: `Folder doesn't exist` } })
+            })
+        })
 
+        
+    })
 })
