@@ -244,7 +244,20 @@ describe(`Folders Endpoints`, function() {
                             .expect(expectedFolder)
                     )
             })
-        })
 
+            it(`responds with 400 when no required fields supplied`, () => {
+                const idToUpdate = 2
+                return supertest(app)
+                    .patch(`/api/folders/${idToUpdate}`)
+                    .send({ irrelevantField: 'foo' })
+                    .expect(400, {
+                        error: {
+                            message: `Request body must contain 'title'`
+                        }
+                    })
+            })
+
+            
+        })
     })
 })
