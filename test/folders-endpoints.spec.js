@@ -218,6 +218,10 @@ describe(`Folders Endpoints`, function() {
 
         context(`Given there are folders in the database`, () => {
             const testFolders = makeFoldersArray();
+            const idToUpdate = 2
+            const updateFolder = {
+                title: `Updated folder title`,
+            }
 
             beforeEach(`insert folders`, () => {
                 return db
@@ -226,10 +230,6 @@ describe(`Folders Endpoints`, function() {
             })
 
             it('responds with 204 and updates the folder', () => {
-                const idToUpdate = 2
-                const updateFolder = {
-                    title: "Updated folder title"
-                }
                 const expectedFolder = {
                     ...testFolders[idToUpdate - 1],
                     ...updateFolder
@@ -246,7 +246,6 @@ describe(`Folders Endpoints`, function() {
             })
 
             it(`responds with 400 when no required fields supplied`, () => {
-                const idToUpdate = 2
                 return supertest(app)
                     .patch(`/api/folders/${idToUpdate}`)
                     .send({ irrelevantField: 'foo' })
@@ -257,7 +256,25 @@ describe(`Folders Endpoints`, function() {
                     })
             })
 
-            
+            it(`responds with 204 when updating only a subset of fields`, () => {
+                const expectedFolder = {
+                    ...testFolders[idToUpdate - 1],
+                    ...updateFolder
+                }
+
+                return supertest(app)
+                    .patch(`/api/folders/${idToUpdate}`)
+                    .send({
+                        ...updateFolder,
+                        fieldToIgnore: 'should not be in GET response'
+                    })
+                    .expect(204)
+                    .then(res =>
+                        supertest(app)    
+                            .get(`/api/folders/${idToUpdate}`)
+                            .expect(expectedFolder)
+                    )
+            })
         })
     })
 })
