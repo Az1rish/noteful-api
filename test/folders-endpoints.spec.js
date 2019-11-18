@@ -216,6 +216,35 @@ describe(`Folders Endpoints`, function() {
             })
         })
 
-        
+        context(`Given there are folders in the database`, () => {
+            const testFolders = makeFoldersArray();
+
+            beforeEach(`insert folders`, () => {
+                return db
+                    .into('noteful_folders')
+                    .insert(testFolders)
+            })
+
+            it('responds with 204 and updates the folder', () => {
+                const idToUpdate = 2
+                const updateFolder = {
+                    title: "Updated folder title"
+                }
+                const expectedFolder = {
+                    ...testFolders[idToUpdate - 1],
+                    ...updateFolder
+                }
+                return supertest(app)
+                    .patch(`/api/folders/${idToUpdate}`)
+                    .send(updateFolder)
+                    .expect(204)
+                    .then(res =>
+                        supertest(app)    
+                            .get(`/api/folders/${idToUpdate}`)
+                            .expect(expectedFolder)
+                    )
+            })
+        })
+
     })
 })
